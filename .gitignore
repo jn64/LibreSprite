@@ -4,6 +4,7 @@ results_*/
 # Source tarballs
 LibreSprite-*.tar.gz
 clip-*.tar.gz
+duktape-*.tar.gz
 flic-*.tar.gz
 observable-*.tar.gz
 simpleini-*.tar.gz
