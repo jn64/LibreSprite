@@ -20,7 +20,7 @@
 %global obs_commit    89c97405025c17fbce5b147aae86fe35b00f98e5
 
 Name:           libresprite
-Version:        1.0^%{snapshot}
+Version:        1.1~dev^%{snapshot}
 Release:        %autorelease
 Summary:        Animated sprite editor & pixel art tool
 
