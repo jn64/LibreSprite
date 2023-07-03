@@ -1,14 +1,18 @@
 %global pname LibreSprite
+
 %global commit 6ffe8472194bf5d0a73b4b2cd7f6804d3c80aa0c
+%global commit_date   20230614
+%global short_commit  %(c=%{commit}; echo ${c:0:7})
+%global snapshot      %{commit_date}git%{short_commit}
 
 Name: libresprite
-Version: 1.0
+Version: 1.0^%{snapshot}
 Release: %autorelease
 Summary: Animated sprite editor & pixel art tool
 
 License: GPL-2.0-only and MIT
 
-URL: https://github.com/LibreSprite/%{repo}
+URL: https://github.com/%{pname}/%{pname}
 Source0: %{url}/archive/%{commit}/%{pname}-%{commit}.tar.gz
 
 # Bundled simpleini
