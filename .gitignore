@@ -1,0 +1,13 @@
+# fedpkg mockbuild results
+results_*/
+
+# Source tarballs
+LibreSprite-*.tar.gz
+clip-*.tar.gz
+flic-*.tar.gz
+observable-*.tar.gz
+simpleini-*.tar.gz
+undo-*.tar.gz
+
+# srpms
+libresprite-*.src.rpm
