@@ -1,22 +1,18 @@
+%global pname LibreSprite
+%global commit 6ffe8472194bf5d0a73b4b2cd7f6804d3c80aa0c
+
 Name: libresprite
 Version: 1.0
 Release: %autorelease
-Summary: Pixel art editor
+Summary: Animated sprite editor & pixel art tool
 
-# LibreSprite itself is GPLv2.
-# However, it depends on source code taken from:
-#   duktape, simpleini, pixman, clip, flic, undo, observable
-# which are subject to the MIT licence.
-License: GPLv2 and MIT
-
-%global repo LibreSprite
-%global commit 0a01bb9a9d6cf65868cebc7f3df346044a6b1534
+License: GPL-2.0-only and MIT
 
 URL: https://github.com/LibreSprite/%{repo}
-Source0: %{URL}/archive/%{commit}/%{repo}-%{commit}.tar.gz
+Source0: %{url}/archive/%{commit}/%{pname}-%{commit}.tar.gz
 
 # Bundled duktape
-%global dt_commit 0de771cd55df729ec8a881b601ca3d4389e4a69a
+%global dt_commit 6f715553e706b61e611aa4ae8e6fe90626800dae
 Source1: https://github.com/aseprite/duktape/archive/%{dt_commit}/duktape-%{dt_commit}.tar.gz
 
 # Bundled simpleini
@@ -28,7 +24,7 @@ Source2: https://github.com/aseprite/simpleini/archive/%{si_commit}/simpleini-%{
 Source3: https://github.com/aseprite/pixman/archive/%{pm_commit}/pixman-%{pm_commit}.tar.gz
 
 # Bundled clip
-%global clip_commit 2f43c68f0dfe51fcdcbc9dcdbe6a62e24ddfd504
+%global clip_commit a65a9e543e9a270bb7c58789d15d027bbd8efb2a
 Source11: https://github.com/aseprite/clip/archive/%{clip_commit}/clip-%{clip_commit}.tar.gz
 
 # Bundled flic
@@ -43,32 +39,41 @@ Source13: https://github.com/aseprite/undo/archive/%{undo_commit}/undo-%{undo_co
 %global obs_commit 89c97405025c17fbce5b147aae86fe35b00f98e5
 Source14: https://github.com/dacap/observable/%{obs_commit}/observable-%{obs_commit}.tar.gz
 
-BuildRequires: cmake
-BuildRequires: desktop-file-utils
-BuildRequires: freetype-devel
 BuildRequires: gcc-c++
+BuildRequires: cmake
+BuildRequires: ninja-build
+BuildRequires: freetype-devel
 BuildRequires: giflib-devel
 BuildRequires: gtest-devel
-BuildRequires: libappstream-glib
 BuildRequires: libcurl-devel
 BuildRequires: libjpeg-turbo-devel
-BuildRequires: libpng-devel libwebp-devel
-BuildRequires: libX11-devel libXcursor-devel
-BuildRequires: ninja-build
+BuildRequires: libpng-devel
+BuildRequires: lua-devel
+BuildRequires: nodejs-devel
 BuildRequires: pixman-devel
+BuildRequires: SDL2-devel
+BuildRequires: SDL2_image-devel
 BuildRequires: tinyxml-devel
 BuildRequires: zlib-devel
 
-Requires: hicolor-icon-theme
+BuildRequires: desktop-file-utils
+BuildRequires: libappstream-glib
 
 %description
-LibreSprite lets you create 2D animations for videogames.
-From sprites, to pixel-art, retro style graphics,
-and whatever else you like about the 8-bit (and 16-bit) era.
+LibreSprite is a free and open source program for creating
+and animating your sprites.
 
+ - Real-time animation previews.
+ - Onion skinning.
+ - Multiple sprites can be edited at once.
+ - Ready to use palettes, or make your own.
+ - Sprites are composed of both layers & frames.
+ - Tiled drawing mode, useful to draw patterns and textures.
+ - Pixel precise tools like filled contour, polygon, shading mode, etc.
+ - Several file types supported for your sprites and animations.
 
 %prep
-%setup -q -n %{repo}-%{commit}
+%autosetup -n %{pname}-%{commit}
 
 pushd third_party
 rm -rf duktape simpleini pixman
@@ -91,56 +96,46 @@ mv flic-%{flic_commit} flic
 mv undo-%{undo_commit} undo
 mv observable-%{obs_commit} observable
 
-
 %build
-%set_build_flags
-mkdir build && cd build
-cmake \
-  -DCMAKE_INSTALL_PREFIX=%{buildroot}%{_prefix} \
-  -DUSE_SHARED_CURL=TRUE \
-  -DUSE_SHARED_FREETYPE=TRUE \
-  -DUSE_SHARED_GIFLIB=TRUE \
-  -DUSE_SHARED_GTEST=TRUE \
-  -DUSE_SHARED_JPEGLIB=TRUE \
-  -DUSE_SHARED_LIBPNG=TRUE \
-  -DWITH_WEBP_SUPPORT=TRUE -DUSE_SHARED_LIBWEBP=TRUE \
-  -DUSE_SHARED_PIXMAN=TRUE \
-  -DUSE_SHARED_TINYXML=TRUE \
-  -DUSE_SHARED_ZLIB=TRUE \
-  -G Ninja ..
-ninja libresprite
+%cmake \
+	-DUSE_SHARED_CURL=TRUE \
+	-DUSE_SHARED_FREETYPE=TRUE \
+	-DUSE_SHARED_GIFLIB=TRUE \
+	-DUSE_SHARED_GTEST=TRUE \
+	-DUSE_SHARED_JPEGLIB=TRUE \
+	-DUSE_SHARED_LIBPNG=TRUE \
+	-DWITH_WEBP_SUPPORT=TRUE -DUSE_SHARED_LIBWEBP=TRUE \
+	-DUSE_SHARED_PIXMAN=TRUE \
+	-DUSE_SHARED_TINYXML=TRUE \
+	-DUSE_SHARED_ZLIB=TRUE
 
+%cmake_build
 
 %install
-pushd build
-ninja install 
-popd
+%cmake_install
 
-ICON_SIZES=`ls data/icons/ase*.png | sed -e 's|[^0-9]*||g'`
-for SIZE in $ICON_SIZES; do
-  SIZE_DIR="%{buildroot}%{_datadir}/icons/hicolor/${SIZE}x${SIZE}/apps/"
-  install -m 755 -d "$SIZE_DIR"
-  install -m 644 "data/icons/ase${SIZE}.png" "${SIZE_DIR}%{name}.png"
+for size in 16 32 48 64; do
+	install -Dpm 0644 data/icons/ase${size}.png \
+		%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
 done
 
-install -m 755 -d %{buildroot}%{_datadir}/applications/
 desktop-file-install \
-  --dir=%{buildroot}%{_datadir}/applications/ \
-  desktop/%{name}.desktop
+	--dir=%{buildroot}%{_datadir}/applications/ \
+	desktop/%{name}.desktop
 
+install -Dpm 0644 -t %{buildroot}%{_metainfodir} desktop/%{name}.appdata.xml
+
+%check
 appstream-util validate-relax --nonet desktop/%{name}.appdata.xml
-install -m 755 -d %{buildroot}/%{_datadir}/appdata/
-install -m 644 desktop/%{name}.appdata.xml %{buildroot}%{_datadir}/appdata/
-
 
 %files
 %license LICENSE.txt
-%doc docs/ README.md
+%doc docs/files/*.txt README.md
 %{_bindir}/%{name}
-%{_datadir}/%{name}
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/**/apps/%{name}.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_metainfodir}/%{name}.appdata.xml
 
 %changelog
 %autochangelog
