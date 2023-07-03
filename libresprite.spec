@@ -78,7 +78,7 @@ mv simpleini-%{si_commit} simpleini
 popd
 
 pushd src
-rm -rf clip flic undo observable
+rm -rf clip flic undo observable allegro
 tar xzf %{SOURCE11}
 tar xzf %{SOURCE12}
 tar xzf %{SOURCE13}
@@ -87,6 +87,7 @@ mv clip-%{clip_commit} clip
 mv flic-%{flic_commit} flic
 mv undo-%{undo_commit} undo
 mv observable-%{obs_commit} observable
+popd
 
 %build
 %cmake \
