@@ -38,20 +38,20 @@ Source14: https://github.com/dacap/observable/%{obs_commit}/observable-%{obs_com
 BuildRequires: gcc-c++
 BuildRequires: cmake
 BuildRequires: ninja-build
-BuildRequires: freetype-devel
+BuildRequires: pkgconfig(freetype2)
 BuildRequires: giflib-devel
-BuildRequires: gtest-devel
-BuildRequires: libcurl-devel
-BuildRequires: libjpeg-turbo-devel
-BuildRequires: libpng-devel
-BuildRequires: lua-devel
+BuildRequires: pkgconfig(gtest)
+BuildRequires: pkgconfig(libcurl)
+BuildRequires: pkgconfig(libjpeg)
+BuildRequires: pkgconfig(libpng)
+BuildRequires: pkgconfig(lua)
 # V8 for nodejs 18 on F37/38
-BuildRequires: v8-10.2-devel
-BuildRequires: pixman-devel
-BuildRequires: SDL2-devel
-BuildRequires: SDL2_image-devel
-BuildRequires: tinyxml-devel
-BuildRequires: zlib-devel
+BuildRequires: pkgconfig(v8-10.2)
+BuildRequires: pkgconfig(pixman-1)
+BuildRequires: pkgconfig(sdl2)
+BuildRequires: pkgconfig(SDL2_image)
+BuildRequires: pkgconfig(tinyxml)
+BuildRequires: pkgconfig(zlib)
 
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
