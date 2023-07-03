@@ -15,10 +15,6 @@ Source0: %{url}/archive/%{commit}/%{pname}-%{commit}.tar.gz
 %global si_commit 0687587cef1816a04307d632e517be9803bbdca6
 Source2: https://github.com/aseprite/simpleini/archive/%{si_commit}/simpleini-%{si_commit}.tar.gz
 
-# Bundled pixman
-%global pm_commit 65f35270e4531621bd2e1ee5cdb31c56c3051c43
-Source3: https://github.com/aseprite/pixman/archive/%{pm_commit}/pixman-%{pm_commit}.tar.gz
-
 # Bundled clip
 %global clip_commit a65a9e543e9a270bb7c58789d15d027bbd8efb2a
 Source11: https://github.com/aseprite/clip/archive/%{clip_commit}/clip-%{clip_commit}.tar.gz
@@ -74,9 +70,7 @@ and animating your sprites.
 pushd third_party
 rm -rf duktape simpleini pixman
 tar xzf %{SOURCE2}
-tar xzf %{SOURCE3}
 mv simpleini-%{si_commit} simpleini
-mv pixman-%{pm_commit} pixman
 popd
 
 pushd src
