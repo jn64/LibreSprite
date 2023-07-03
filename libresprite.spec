@@ -45,7 +45,8 @@ BuildRequires: libcurl-devel
 BuildRequires: libjpeg-turbo-devel
 BuildRequires: libpng-devel
 BuildRequires: lua-devel
-BuildRequires: nodejs-devel
+# V8 for nodejs 18 on F37/38
+BuildRequires: v8-10.2-devel
 BuildRequires: pixman-devel
 BuildRequires: SDL2-devel
 BuildRequires: SDL2_image-devel
