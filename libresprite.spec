@@ -11,10 +11,6 @@ License: GPL-2.0-only and MIT
 URL: https://github.com/LibreSprite/%{repo}
 Source0: %{url}/archive/%{commit}/%{pname}-%{commit}.tar.gz
 
-# Bundled duktape
-%global dt_commit 6f715553e706b61e611aa4ae8e6fe90626800dae
-Source1: https://github.com/aseprite/duktape/archive/%{dt_commit}/duktape-%{dt_commit}.tar.gz
-
 # Bundled simpleini
 %global si_commit 0687587cef1816a04307d632e517be9803bbdca6
 Source2: https://github.com/aseprite/simpleini/archive/%{si_commit}/simpleini-%{si_commit}.tar.gz
@@ -77,10 +73,8 @@ and animating your sprites.
 
 pushd third_party
 rm -rf duktape simpleini pixman
-tar xzf %{SOURCE1}
 tar xzf %{SOURCE2}
 tar xzf %{SOURCE3}
-mv duktape-%{dt_commit} duktape
 mv simpleini-%{si_commit} simpleini
 mv pixman-%{pm_commit} pixman
 popd
