@@ -24,11 +24,11 @@ Version:        1.1~dev^%{snapshot}
 Release:        %autorelease
 Summary:        Animated sprite editor & pixel art tool
 
-License:        GPL-2.0-only and MIT
+License:        GPL-2.0-only
 
 URL:            https://github.com/%{pname}/%{pname}
 Source0:        %{url}/archive/%{commit}/%{pname}-%{commit}.tar.gz
-Source1:        https://github.com/LibreSprite/duktape/archive/%{dt_commit}/duktape-%{dt_commit}.tar.gz
+Source1:        https://github.com/%{pname}/duktape/archive/%{dt_commit}/duktape-%{dt_commit}.tar.gz
 Source2:        https://github.com/aseprite/simpleini/archive/%{si_commit}/simpleini-%{si_commit}.tar.gz
 Source11:       https://github.com/aseprite/clip/archive/%{clip_commit}/clip-%{clip_commit}.tar.gz
 Source12:       https://github.com/aseprite/flic/archive/%{flic_commit}/flic-%{flic_commit}.tar.gz
@@ -41,6 +41,7 @@ BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  giflib-devel
 BuildRequires:  pkgconfig(gtest)
+BuildRequires:  pkgconfig(gtkmm-3.0)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
@@ -93,7 +94,9 @@ mv observable-%{obs_commit} observable
 popd
 
 %build
-%cmake \
+%cmake -Wno-dev \
+	-DWITH_DESKTOP_INTEGRATION=TRUE \
+	-DWITH_GTK_FILE_DIALOG_SUPPORT=TRUE \
 	-DWITH_WEBP_SUPPORT=TRUE
 
 %cmake_build
@@ -101,28 +104,30 @@ popd
 %install
 %cmake_install
 
-for size in 16 32 48 64; do
-	install -Dpm 0644 data/icons/ase${size}.png \
-		%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
-done
+sed -i -e 's/icon name="aseprite"/icon name="%{name}"/' \
+	%{buildroot}%{_datadir}/mime/packages/aseprite.xml
+mv %{buildroot}%{_datadir}/mime/packages/aseprite.xml \
+	%{buildroot}%{_datadir}/mime/packages/%{name}.xml
 
-desktop-file-install \
-	--dir=%{buildroot}%{_datadir}/applications/ \
-	desktop/%{name}.desktop
-
-install -Dpm 0644 -t %{buildroot}%{_metainfodir} desktop/%{name}.appdata.xml
+mkdir -p %{buildroot}%{_metainfodir}
+mv %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml \
+	%{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 %check
-appstream-util validate-relax --nonet desktop/%{name}.appdata.xml
+appstream-util validate-relax --nonet \
+	%{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 %files
-%license LICENSE.txt
-%doc docs/files/*.txt README.md
+%license LICENSE.txt docs/licenses/*.txt
+%doc README.md CONTRIBUTORS.md SECURITY.md Theming.md docs/files/*.txt
 %{_bindir}/%{name}
+%{_bindir}/%{name}-thumbnailer
 %{_datadir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_metainfodir}/%{name}.appdata.xml
+%{_datadir}/mime/packages/%{name}.xml
+%{_datadir}/thumbnailers/%{name}.thumbnailer
+%{_metainfodir}/%{name}.metainfo.xml
 
 %changelog
 %autochangelog
